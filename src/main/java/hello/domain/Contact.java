@@ -1,6 +1,7 @@
 package hello.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table
@@ -10,16 +11,36 @@ public class Contact {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@NotNull
 	private String firstName;
 
+	@NotNull
 	private String lastName;
 
+	@NotNull
+	private String phoneNumber;
+
 	protected Contact() {
+
 	}
 
 	public Contact(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
+	}
+
+	public Contact(String firstName, String lastName, String phoneNumber) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 
 	public Long getId() {
@@ -44,8 +65,11 @@ public class Contact {
 
 	@Override
 	public String toString() {
-		return String.format("Contact[id=%d, firstName='%s', lastName='%s']", id,
-				firstName, lastName);
+		return "Contact{" +
+				"id=" + id +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", phoneNumber='" + phoneNumber + '\'' +
+				'}';
 	}
-
 }

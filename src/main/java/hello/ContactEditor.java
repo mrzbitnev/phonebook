@@ -24,7 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @SpringComponent
 @UIScope
-public class CustomerEditor extends VerticalLayout implements KeyNotifier {
+public class ContactEditor extends VerticalLayout implements KeyNotifier {
+
+	public interface ChangeHandler {
+		void onChange();
+	}
 
 	private final ContactRepository repository;
 
@@ -36,6 +40,7 @@ public class CustomerEditor extends VerticalLayout implements KeyNotifier {
 	/* Fields to edit properties in Contact entity */
 	TextField firstName = new TextField("First name");
 	TextField lastName = new TextField("Last name");
+	TextField phoneNumber = new TextField("Phone number");
 
 	/* Action buttons */
 	// TODO why more code?
@@ -48,10 +53,10 @@ public class CustomerEditor extends VerticalLayout implements KeyNotifier {
 	private ChangeHandler changeHandler;
 
 	@Autowired
-	public CustomerEditor(ContactRepository repository) {
+	public ContactEditor(ContactRepository repository) {
 		this.repository = repository;
 
-		add(firstName, lastName, actions);
+		add(firstName, lastName, phoneNumber, actions);
 
 		// bind using naming convention
 		binder.bindInstanceFields(this);
@@ -67,7 +72,7 @@ public class CustomerEditor extends VerticalLayout implements KeyNotifier {
 		// wire action buttons to save, delete and reset
 		save.addClickListener(e -> save());
 		delete.addClickListener(e -> delete());
-		cancel.addClickListener(e -> editCustomer(contact));
+		cancel.addClickListener(e -> editContact(contact));
 		setVisible(false);
 	}
 
@@ -81,24 +86,20 @@ public class CustomerEditor extends VerticalLayout implements KeyNotifier {
 		changeHandler.onChange();
 	}
 
-	public interface ChangeHandler {
-		void onChange();
-	}
 
-	public final void editCustomer(Contact c) {
+	public final void editContact(Contact c) {
 		if (c == null) {
 			setVisible(false);
 			return;
 		}
-		final boolean persisted = c.getId() != null;
-		if (persisted) {
+		if (c.getId() != null) {
 			// Find fresh entity for editing
-			contact = repository.findById(c.getId()).get();
+			contact = repository.findById(c.getId()).orElse(c);
 		}
 		else {
 			contact = c;
 		}
-		cancel.setVisible(persisted);
+		//cancel.setVisible(persisted);
 
 		// Bind contact properties to similarly named fields
 		// Could also use annotation or "manual binding" or programmatically

@@ -21,8 +21,9 @@ public class ContactEditorTests {
 
 	@Mock
     ContactRepository contactRepository;
-	@InjectMocks CustomerEditor editor;
-	@Mock CustomerEditor.ChangeHandler changeHandler;
+	@InjectMocks
+    ContactEditor editor;
+	@Mock ContactEditor.ChangeHandler changeHandler;
 
 	@Before
 	public void init() {
@@ -51,10 +52,10 @@ public class ContactEditorTests {
 	}
 
 	private void emptyCustomerWasSetToForm() {
-		//this.editor.editCustomer(new Contact());
+		//this.editor.editContact(new Contact());
 	}
 	private void customerDataWasFilled() {
-		this.editor.editCustomer(new Contact(FIRST_NAME, LAST_NAME));
+		this.editor.editContact(new Contact(FIRST_NAME, LAST_NAME));
 	}
 
 	private ArgumentMatcher<Contact> customerMatchesEditorFields() {

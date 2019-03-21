@@ -31,13 +31,13 @@ public class MainViewTests {
 
 	VaadinRequest vaadinRequest = Mockito.mock(VaadinRequest.class);
 
-	CustomerEditor editor;
+	ContactEditor editor;
 
 	MainView mainView;
 
 	@Before
 	public void setup() {
-		this.editor = new CustomerEditor(this.repository);
+		this.editor = new ContactEditor(this.repository);
 		this.mainView = new MainView(this.repository, editor);
 	}
 
@@ -75,7 +75,7 @@ public class MainViewTests {
 
 		this.repository.save(new Contact("Josh", "Long"));
 
-		mainView.listCustomers("Long");
+		mainView.listContact("Long");
 
 		then(getCustomersInGrid()).hasSize(1);
 		then(getCustomersInGrid().get(getCustomersInGrid().size() - 1))
@@ -97,11 +97,11 @@ public class MainViewTests {
 		then(this.editor.isVisible()).isTrue();
 	}
 
-	private void customerDataWasFilled(CustomerEditor editor, String firstName,
-			String lastName) {
+	private void customerDataWasFilled(ContactEditor editor, String firstName,
+                                       String lastName) {
 		this.editor.firstName.setValue(firstName);
 		this.editor.lastName.setValue(lastName);
-		editor.editCustomer(new Contact(firstName, lastName));
+		editor.editContact(new Contact(firstName, lastName));
 	}
 
 	@Configuration

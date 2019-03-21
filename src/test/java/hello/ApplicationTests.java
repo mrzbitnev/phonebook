@@ -23,6 +23,6 @@ public class ApplicationTests {
 
 	@Test
 	public void shouldFindTwoBauerCustomers() {
-		then(this.repository.findByLastNameStartsWithIgnoreCase("Bauer")).hasSize(2);
+		then(this.repository.findByName("Bauer")).hasSize(2);
 	}
 }

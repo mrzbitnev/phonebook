@@ -17,7 +17,7 @@ public class MainView extends VerticalLayout {
 
 	private final ContactRepository repo;
 
-	private final CustomerEditor editor;
+	private final ContactEditor editor;
 
 	final Grid<Contact> grid;
 
@@ -25,7 +25,7 @@ public class MainView extends VerticalLayout {
 
 	private final Button addNewBtn;
 
-	public MainView(ContactRepository repo, CustomerEditor editor) {
+	public MainView(ContactRepository repo, ContactEditor editor) {
 		this.repo = repo;
 		this.editor = editor;
 		this.grid = new Grid<>(Contact.class);
@@ -37,7 +37,7 @@ public class MainView extends VerticalLayout {
 		add(actions, grid, editor);
 
 		grid.setHeight("300px");
-		grid.setColumns("id", "firstName", "lastName");
+		grid.setColumns("id", "firstName", "lastName", "phoneNumber");
 		grid.getColumnByKey("id").setWidth("50px").setFlexGrow(0);
 
 		filter.setPlaceholder("Filter by last name");
@@ -46,35 +46,35 @@ public class MainView extends VerticalLayout {
 
 		// Replace listing with filtered content when user changes filter
 		filter.setValueChangeMode(ValueChangeMode.EAGER);
-		filter.addValueChangeListener(e -> listCustomers(e.getValue()));
+		filter.addValueChangeListener(e -> listContact(e.getValue()));
 
 		// Connect selected Contact to editor or hide if none is selected
 		grid.asSingleSelect().addValueChangeListener(e -> {
-			editor.editCustomer(e.getValue());
+			editor.editContact(e.getValue());
 		});
 
 		// Instantiate and edit new Contact the new button is clicked
-		addNewBtn.addClickListener(e -> editor.editCustomer(new Contact("", "")));
+		addNewBtn.addClickListener(e -> editor.editContact(new Contact("", "")));
 
 		// Listen changes made by the editor, refresh data from backend
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
-			listCustomers(filter.getValue());
+			listContact(filter.getValue());
 		});
 
 		// Initialize listing
-		listCustomers(null);
+		listContact(null);
 	}
 
-	// tag::listCustomers[]
-	void listCustomers(String filterText) {
+	// tag::listContact[]
+	void listContact(String filterText) {
 		if (StringUtils.isEmpty(filterText)) {
 			grid.setItems(repo.findAll());
 		}
 		else {
-			grid.setItems(repo.findByLastNameStartsWithIgnoreCase(filterText));
+			grid.setItems(repo.findByName(filterText));
 		}
 	}
-	// end::listCustomers[]
+	// end::listContact[]
 
 }
