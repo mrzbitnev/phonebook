@@ -9,10 +9,9 @@ import java.util.List;
 
 public interface ContactRepository extends JpaRepository<Contact, Long> {
 
-//	@Query(value = "SELECT * FROM CONTACT WHERE  like name  ", nativeQuery = true)
-//	List<Contact> findByName(@Param("name") String name);
 	@Query("from Contact c " +
-			"where concat(c.firstName, ' ', c.lastName, ' ', c.phoneNumber )" +
+			"where concat(c.firstName, ' ', c.lastName, ' ', c.phoneNumber," +
+			"' ', c.contactField1, ' ',  c.contactField2, ' ', c.contactField3, ' ', c.contactField4)" +
 			"like concat('%', :name, '%') ")
 	List<Contact> findByName(@Param("name") String name);
 }

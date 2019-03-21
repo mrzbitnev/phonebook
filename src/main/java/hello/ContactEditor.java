@@ -14,108 +14,82 @@ import hello.domain.Contact;
 import hello.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * A simple example to introduce building forms. As your real application is probably much
- * more complicated than this example, you could re-use this form in multiple places. This
- * example component is only used in MainView.
- * <p>
- * In a real world application you'll most likely using a common super class for all your
- * forms - less code, better UX.
- */
 @SpringComponent
 @UIScope
 public class ContactEditor extends VerticalLayout implements KeyNotifier {
 
-	public interface ChangeHandler {
-		void onChange();
-	}
+    public interface ChangeHandler {
+        void onChange();
+    }
 
-	private final ContactRepository repository;
+    private final ContactRepository repository;
 
-	/**
-	 * The currently edited contact
-	 */
-	private Contact contact;
+    TextField firstName = new TextField("First name");
+    TextField lastName = new TextField("Last name");
+    TextField phoneNumber = new TextField("Phone number");
+    TextField contactField1 = new TextField("Field");
+    TextField contactField2 = new TextField("Field");
+    TextField contactField3 = new TextField("Field");
+    TextField contactField4 = new TextField("Field");
 
-	/* Fields to edit properties in Contact entity */
-	TextField firstName = new TextField("First name");
-	TextField lastName = new TextField("Last name");
-	TextField phoneNumber = new TextField("Phone number");
+    private Contact contact;
+    Button save = new Button("Save", VaadinIcon.CHECK.create());
+    Button cancel = new Button("Cancel");
+    Button delete = new Button("Delete", VaadinIcon.TRASH.create());
+    HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
-	/* Action buttons */
-	// TODO why more code?
-	Button save = new Button("Save", VaadinIcon.CHECK.create());
-	Button cancel = new Button("Cancel");
-	Button delete = new Button("Delete", VaadinIcon.TRASH.create());
-	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
+    Binder<Contact> binder = new Binder<>(Contact.class);
+    private ChangeHandler changeHandler;
 
-	Binder<Contact> binder = new Binder<>(Contact.class);
-	private ChangeHandler changeHandler;
+    @Autowired
+    public ContactEditor(ContactRepository repository) {
+        this.repository = repository;
 
-	@Autowired
-	public ContactEditor(ContactRepository repository) {
-		this.repository = repository;
+        add(actions, firstName, lastName, phoneNumber,
+                contactField1, contactField2, contactField3,
+                contactField4);
 
-		add(firstName, lastName, phoneNumber, actions);
+        binder.bindInstanceFields(this);
+        setSpacing(true);
+        save.getElement().getThemeList().add("primary");
+        delete.getElement().getThemeList().add("error");
 
-		// bind using naming convention
-		binder.bindInstanceFields(this);
+        addKeyPressListener(Key.ENTER, e -> save());
 
-		// Configure and style components
-		setSpacing(true);
+        save.addClickListener(e -> save());
+        delete.addClickListener(e -> delete());
+        cancel.addClickListener(e -> editContact(contact));
+        setVisible(false);
+    }
 
-		save.getElement().getThemeList().add("primary");
-		delete.getElement().getThemeList().add("error");
+    void delete() {
+        repository.delete(contact);
+        changeHandler.onChange();
+    }
 
-		addKeyPressListener(Key.ENTER, e -> save());
-
-		// wire action buttons to save, delete and reset
-		save.addClickListener(e -> save());
-		delete.addClickListener(e -> delete());
-		cancel.addClickListener(e -> editContact(contact));
-		setVisible(false);
-	}
-
-	void delete() {
-		repository.delete(contact);
-		changeHandler.onChange();
-	}
-
-	void save() {
-		repository.save(contact);
-		changeHandler.onChange();
-	}
+    void save() {
+        repository.save(contact);
+        changeHandler.onChange();
+    }
 
 
-	public final void editContact(Contact c) {
-		if (c == null) {
-			setVisible(false);
-			return;
-		}
-		if (c.getId() != null) {
-			// Find fresh entity for editing
-			contact = repository.findById(c.getId()).orElse(c);
-		}
-		else {
-			contact = c;
-		}
-		//cancel.setVisible(persisted);
+    public final void editContact(Contact c) {
+        if (c == null) {
+            setVisible(false);
+            return;
+        }
+        if (c.getId() != null) {
+            contact = repository.findById(c.getId()).orElse(c);
+        } else {
+            contact = c;
+        }
+        binder.setBean(contact);
+        setVisible(true);
+        firstName.focus();
+    }
 
-		// Bind contact properties to similarly named fields
-		// Could also use annotation or "manual binding" or programmatically
-		// moving values from fields to entities before saving
-		binder.setBean(contact);
-
-		setVisible(true);
-
-		// Focus first name initially
-		firstName.focus();
-	}
-
-	public void setChangeHandler(ChangeHandler h) {
-		// ChangeHandler is notified when either save or delete
-		// is clicked
-		changeHandler = h;
-	}
+    public void setChangeHandler(ChangeHandler h) {
+        changeHandler = h;
+    }
 
 }

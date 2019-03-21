@@ -16,13 +16,9 @@ import org.springframework.util.StringUtils;
 public class MainView extends VerticalLayout {
 
 	private final ContactRepository repo;
-
 	private final ContactEditor editor;
-
 	final Grid<Contact> grid;
-
 	final TextField filter;
-
 	private final Button addNewBtn;
 
 	public MainView(ContactRepository repo, ContactEditor editor) {
@@ -32,41 +28,34 @@ public class MainView extends VerticalLayout {
 		this.filter = new TextField();
 		this.addNewBtn = new Button("New customer", VaadinIcon.PLUS.create());
 
-		// build layout
 		HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
 		add(actions, grid, editor);
 
 		grid.setHeight("300px");
-		grid.setColumns("id", "firstName", "lastName", "phoneNumber");
+		grid.setColumns("id", "firstName", "lastName", "phoneNumber", "contactField1",
+				"contactField2", "contactField3", "contactField4");
 		grid.getColumnByKey("id").setWidth("50px").setFlexGrow(0);
 
 		filter.setPlaceholder("Filter by last name");
 
-		// Hook logic to components
-
-		// Replace listing with filtered content when user changes filter
 		filter.setValueChangeMode(ValueChangeMode.EAGER);
 		filter.addValueChangeListener(e -> listContact(e.getValue()));
 
-		// Connect selected Contact to editor or hide if none is selected
 		grid.asSingleSelect().addValueChangeListener(e -> {
 			editor.editContact(e.getValue());
 		});
 
-		// Instantiate and edit new Contact the new button is clicked
-		addNewBtn.addClickListener(e -> editor.editContact(new Contact("", "")));
+		addNewBtn.addClickListener(e -> editor.editContact(new Contact("", "",
+				"","", "", "", "")));
 
-		// Listen changes made by the editor, refresh data from backend
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
 			listContact(filter.getValue());
 		});
 
-		// Initialize listing
 		listContact(null);
 	}
 
-	// tag::listContact[]
 	void listContact(String filterText) {
 		if (StringUtils.isEmpty(filterText)) {
 			grid.setItems(repo.findAll());
@@ -75,6 +64,5 @@ public class MainView extends VerticalLayout {
 			grid.setItems(repo.findByName(filterText));
 		}
 	}
-	// end::listContact[]
 
 }

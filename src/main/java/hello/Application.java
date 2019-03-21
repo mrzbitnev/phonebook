@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
 
-//	private static final Logger log = LoggerFactory.getLogger(Application.class);
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class);
 	}
@@ -22,8 +20,10 @@ public class Application {
 	@Bean
 	public CommandLineRunner loadData(ContactRepository repository) {
 		return (args) -> {
-
+			repository.save(new Contact("Kim", "Chang", "9609041213", "9709041213", "vk.com/1", "@telegramm1", "skipe1"));
+			repository.save(new Contact("Melony", "Konstantin", "9609041213", "9709041213", "vk.com/2", "@telegramm2", "skipe2"));
+			repository.save(new Contact("Bess", "O'Donnell", "9609041213", "9709041213", "vk.com/3", "@telegramm3", "skipe3"));
+			repository.save(new Contact("Kelly", "Berry", "9609041213", "9709041213", "vk.com/4", "@telegramm4", "skipe4"));
 		};
 	}
-
 }
